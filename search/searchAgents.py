@@ -370,21 +370,22 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    initial_pos = state[0]
-    tcorner = state[1]
+    initial_pos = state[0] #initial position
+    vcorner = state[1] #visited corners
 
-    ntcorner = list(set(corners).difference(set(tcorner))) #non touched corners = totalcorners - touchedcorners
+    nvcorner = list(set(corners).difference(set(vcorner))) #non visted corners = totalcorners - visitedcorners
 
-    if len(ntcorner == 0):
+    if len(nvcorner) == 0:
         return 0 
     
     distance = 0
+
     #entender
 
     totalcost = {}
     # initial totalcost
-    for i in range(len(ntcorner)):
-        totalcost[ntcorner[i]] = 0
+    for i in range(len(nvcorner)):
+        totalcost[nvcorner[i]] = 0
     while (len(totalcost) > 0):
         for corner in totalcost.keys():
             totalcost[corner] = (abs(corner[0] - initial_pos[0]) +
