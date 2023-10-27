@@ -487,8 +487,20 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+    untouchedfood = foodGrid.asList()
+    distance = 0
+    if len(untouchedfood) == 0:
+        return 0
+    # can't only calculate one step ,should calculate the total cost
+    # means I shouldsimulate the whole progress!
+    totalcost = []
+    # calculate totalcost
+    for food in untouchedfood:
+        totalcost.append(
+            mazeDistance(position, food, problem.startingGameState))
+    # only need max,because we use mazeDistance,and the shorter food will be touched
+    distance = max(totalcost)
+    return distance
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
