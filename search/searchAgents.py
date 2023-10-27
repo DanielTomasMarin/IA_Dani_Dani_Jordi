@@ -388,8 +388,8 @@ def cornersHeuristic(state, problem):
         totalcost[nvcorner[i]] = 0
     while (len(totalcost) > 0):
         for corner in totalcost.keys():
-            totalcost[corner] = (abs(corner[0] - initial_pos[0]) +
-                                 abs(corner[1] - initial_pos[1]))
+            totalcost[corner] = (abs(corner[0] - initial_pos[0]) + abs(corner[1] - initial_pos[1]))
+            #totalcost[corner] = manhattanHeuristic(corner,initial_pos)
         # update the state
         initial_pos = min(totalcost, key=lambda key: totalcost[key])
         distance += totalcost[initial_pos]
