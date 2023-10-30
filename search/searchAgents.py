@@ -365,8 +365,9 @@ def cornersHeuristic(state, problem):
     This function should always return a number that is a lower bound on the
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
-     "*** YOUR CODE HERE ***"
+      "*** YOUR CODE HERE ***"
     """
+
     corners = problem.corners # Corner coordinates
     walls = problem.walls # Walls of the maze
     initial_pos, vcorner = state[0], state[1] # initial position and visited corners
@@ -484,22 +485,29 @@ def foodHeuristic(state, problem):
     value, try: problem.heuristicInfo['wallCount'] = problem.walls.count()
     Subsequent calls to this heuristic can access
     problem.heuristicInfo['wallCount']
+        "*** YOUR CODE HERE ***"
     """
-    position, foodGrid = state
-    untouchedfood = foodGrid.asList()
-    distance = 0
-    if len(untouchedfood) == 0:
-        return 0
-    # can't only calculate one step ,should calculate the total cost
-    # means I shouldsimulate the whole progress!
-    totalcost = []
-    # calculate totalcost
-    for food in untouchedfood:
-        totalcost.append(
-            mazeDistance(position, food, problem.startingGameState))
-    # only need max,because we use mazeDistance,and the shorter food will be touched
-    distance = max(totalcost)
-    return distance
+
+    current_position, foodGrid = state # Extract Pac-Man's current position and the grid of food locations
+    nvfood = foodGrid.asList() # Initial Nonvisited food
+    
+    if len(nvfood) == 0:
+        return 0  # If there is no nonvisited food left, return 0 as the goal is reached
+
+    final_cost = []
+    # Calculate the path cost (mazeDistance function provided) to each nonvisited food pellet
+    for food in nvfood:
+        # Calculate the path cost from the current position to each nonvisited food
+        path_cost = mazeDistance(current_position, food, problem.startingGameState)
+        
+        # Store the calculated path cost in the final_cost list
+        final_cost.append(path_cost)
+
+    # Find the maximum path cost among all nonvisited food pellets, max: estimate is conservative and admissible.
+    final_distance = max(final_cost)
+
+    return final_distance  # Return the maximum path cost among all non-visited food pellets
+
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
