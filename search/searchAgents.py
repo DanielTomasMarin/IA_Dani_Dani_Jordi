@@ -365,36 +365,35 @@ def cornersHeuristic(state, problem):
     This function should always return a number that is a lower bound on the
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
+     "*** YOUR CODE HERE ***"
     """
-    corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+    corners = problem.corners # Corner coordinates
+    walls = problem.walls # Walls of the maze
+    initial_pos, vcorner = state[0], state[1] # initial position and visited corners
 
-    "*** YOUR CODE HERE ***"
-    initial_pos = state[0] #initial position
-    vcorner = state[1] #visited corners
-
-    nvcorner = list(set(corners).difference(set(vcorner))) #non visted corners = totalcorners - visitedcorners
+    nvcorner = list(set(corners) - set(vcorner)) # non-visited corners = totalcorners - visitedcorners
 
     if len(nvcorner) == 0:
-        return 0 
+        return 0 # If all corners are visited, return 0 as we are already at the goal
     
     distance = 0
 
-    #entender
 
-    totalcost = {}
-    # initial totalcost
-    for i in range(len(nvcorner)):
-        totalcost[nvcorner[i]] = 0
-    while (len(totalcost) > 0):
-        for corner in totalcost.keys():
-            totalcost[corner] = (abs(corner[0] - initial_pos[0]) + abs(corner[1] - initial_pos[1]))
-            #totalcost[corner] = manhattanHeuristic(corner,initial_pos)
-        # update the state
-        initial_pos = min(totalcost, key=lambda key: totalcost[key])
-        distance += totalcost[initial_pos]
-        del totalcost[initial_pos]
-    return distance
+    while (len(nvcorner) > 0):
+       # Find the corner with the minimum Manhattan distance (with the corner(c) and the initial position)
+        min_distance_corner = min(nvcorner, key=lambda c: abs(c[0] - initial_pos[0]) + abs(c[1] - initial_pos[1]))
+
+        
+        # Update distance and current position using Manhattan distance (with the min_distance_corner and the initial position)
+        distance += abs(min_distance_corner[0] - initial_pos[0]) + abs(min_distance_corner[1] - initial_pos[1])
+        initial_pos = min_distance_corner
+
+        # Remove the chosen corner from the list of unvisited corners
+        nvcorner.remove(min_distance_corner)
+
+
+    return distance  # Return the estimated total distance to all nonvisited corners
+
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
