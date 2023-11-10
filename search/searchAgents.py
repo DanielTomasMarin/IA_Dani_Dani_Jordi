@@ -537,6 +537,8 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
+        "*** YOUR CODE HERE ***"
+        # Perform a uniform cost search to find the path to the closest food dot.
         return search.uniformCostSearch(AnyFoodSearchProblem(gameState))
         util.raiseNotDefined()
 
@@ -570,8 +572,13 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """
         The state is Pacman's position. Fill this in with a goal test that will
         complete the problem definition.
+         "*** YOUR CODE HERE ***"
         """
+        # Extract the coordinates (x, y) from the given state.
         x, y = state
+         
+        # Check if the (x, y) coordinates of Pacman's position are in the list of food positions.
+        # If Pacman's position matches a food position, it's a goal state.
         if (x,y) in self.food.asList():
             return True
         else:
