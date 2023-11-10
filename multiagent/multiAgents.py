@@ -74,7 +74,34 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        foodList = newFood.asList() 
+        ghostPositions = []
+
+        # For each ghost in the newGhostStates, get its position and append it to the ghostPositions list
+        for ghost in newGhostStates:
+            ghostPosition = ghost.getPosition()[0], ghost.getPosition()[1]
+            ghostPositions.append(ghostPosition)
+
+        # Check if the ghost is scared by seeing if the first element in newScaredTimes is greater than 0
+        isScared = newScaredTimes[0] > 0
+
+        # If the ghost is not scared and the new position is in the ghost positions, return -1
+        if isScared == False and (newPos in ghostPositions):
+            return -1
+        # If the new position is in the list of food positions in the current game state, return 1
+        if newPos in currentGameState.getFood().asList():
+            return 1
+
+        # Sort the food list and ghost positions list based on their manhattan distance from the new position
+        nearestFoodDist = sorted(foodList, key=lambda foodDistance: util.manhattanDistance(foodDistance, newPos))
+        nearestGhostDist = sorted(ghostPositions, key=lambda ghostDistance: util.manhattanDistance(ghostDistance, newPos))
+        
+        foodDistance = lambda foodDist: util.manhattanDistance(foodDist, newPos)
+        ghostDistance = lambda ghostDist: util.manhattanDistance(ghostDist, newPos)
+
+        # Return the reciprocal of the manhattan distance to the nearest food minus the reciprocal of the manhattan distance to the nearest ghost
+        return 1 / foodDistance(nearestFoodDist[0]) - 1/ghostDistance(nearestGhostDist[0])
+
 
 def scoreEvaluationFunction(currentGameState):
     """
@@ -135,7 +162,45 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        bestValue = -9999999.0
+        bestAction = Directions.STOP
+
+        # Iterate over all legal actions for the current game state
+        for action in gameState.getLegalActions(0):
+            nextState = gameState.generateSuccessor(0, action)
+            newValue = self.getValue(nextState, 0, 1)
+
+            # If the new value is better than the best value, update the best value and the best action
+            if newValue > bestValue:
+                bestValue = newValue
+                bestAction = action
+        return bestAction
+
+
+    def getValue(self, gameState, currentDepth, agentIndex):
+        # If the current depth equals the maximum depth or the game is won or lost, return the evaluation function value
+        if currentDepth == self.depth or gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction(gameState)
+
+        # Initialize the value to a very small number if the agent is Pacman (agentIndex 0), or to a very large number otherwise
+        value = -9999999.0 if agentIndex == 0 else 9999999.0
+        
+        # Iterate over all legal actions for the current agent
+        for action in gameState.getLegalActions(agentIndex):
+            # If the agent is Pacman, update the value with the maximum of the current value and the value of the next state
+            if agentIndex == 0:
+                value = max(value, self.getValue(gameState.generateSuccessor(0, action), currentDepth, 1))
+           
+            # If the agent is the last ghost, update the value with the minimum of the current value and the value of the next state, and increase the depth
+            elif agentIndex == gameState.getNumAgents()-1:
+                value = min(value, self.getValue(gameState.generateSuccessor(agentIndex, action), currentDepth + 1, 0))
+           
+            # If the agent is a ghost but not the last one, update the value with the minimum of the current value and the value of the next state
+            else:
+                value = min(value, self.getValue(gameState.generateSuccessor(agentIndex, action), currentDepth, agentIndex+1))
+        return value
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
