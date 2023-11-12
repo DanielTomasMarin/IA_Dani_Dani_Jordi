@@ -184,22 +184,22 @@ class MinimaxAgent(MultiAgentSearchAgent):
             return self.evaluationFunction(gameState)
 
         # Initialize the value to a very small number if the agent is Pacman (agentIndex 0), or to a very large number otherwise
-        value = -9999999.0 if agentIndex == 0 else 9999999.0
+        bestValue = -9999999.0 if agentIndex == 0 else 9999999.0
         
         # Iterate over all legal actions for the current agent
         for action in gameState.getLegalActions(agentIndex):
             # If the agent is Pacman, update the value with the maximum of the current value and the value of the next state
             if agentIndex == 0:
-                value = max(value, self.getValue(gameState.generateSuccessor(0, action), currentDepth, 1))
+                bestValue = max(bestValue, self.getValue(gameState.generateSuccessor(0, action), currentDepth, 1))
            
             # If the agent is the last ghost, update the value with the minimum of the current value and the value of the next state, and increase the depth
             elif agentIndex == gameState.getNumAgents()-1:
-                value = min(value, self.getValue(gameState.generateSuccessor(agentIndex, action), currentDepth + 1, 0))
+                bestValue = min(bestValue, self.getValue(gameState.generateSuccessor(agentIndex, action), currentDepth + 1, 0))
            
             # If the agent is a ghost but not the last one, update the value with the minimum of the current value and the value of the next state
             else:
-                value = min(value, self.getValue(gameState.generateSuccessor(agentIndex, action), currentDepth, agentIndex+1))
-        return value
+                bestValue = min(bestValue, self.getValue(gameState.generateSuccessor(agentIndex, action), currentDepth, agentIndex+1))
+        return bestValue
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
@@ -212,7 +212,63 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        
+        # Initialize alpha and beta values
+        alpha= -9999999.0
+        beta= 9999999.0
+
+        # Initialize the best value and action
+        bestValue = -9999999.0
+        bestAction = Directions.STOP
+        
+        # Iterate over all possible actions and update the best value and action and retun the best action
+        for action in gameState.getLegalActions(0):
+            nextState = gameState.generateSuccessor(0, action)
+            bestValue = max(bestValue, self.getValue(nextState,0 ,1 ,alpha,beta ))
+
+            # If the value of the current action is better than the best known value, update alpha and the best action.
+            if bestValue > alpha:
+                alpha = bestValue
+                bestAction = action
+
+        return bestAction
+
+
+    def getValue(self, gameState, currentDepth, agentIndex, alpha, beta):
+
+
+        # If the game is over or the maximum depth is reached, return the evaluation function value
+        if currentDepth == self.depth or gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction(gameState)
+
+        # If the agent is the maximizing agent (agentIndex == 0), find the maximum value over all actions
+        if agentIndex == 0:
+            bestValue = -9999999.0
+            index = 1
+            for action in gameState.getLegalActions(agentIndex):
+                successor = gameState.generateSuccessor(agentIndex, action)
+                bestValue = max(bestValue, self.getValue(successor ,currentDepth ,index ,alpha ,beta ))
+                if bestValue > beta:
+                    return bestValue
+                alpha = max(alpha, bestValue)
+            return bestValue
+
+        # If the agent is a minimizing agent, find the minimum value over all actions
+        else:
+            bestValue= 9999999.0
+            if agentIndex == gameState.getNumAgents()-1:
+                currentDepth = currentDepth + 1
+                index = 0
+            else:
+                index= agentIndex + 1
+            for action in gameState.getLegalActions(agentIndex):
+                successor = gameState.generateSuccessor(agentIndex, action)
+                bestValue=min(bestValue,self.getValue(successor, currentDepth ,index ,alpha ,beta ))
+                if bestValue<alpha:
+                    return bestValue
+                beta=min(bestValue,beta)
+            return bestValue
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
