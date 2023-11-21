@@ -20,11 +20,16 @@
 # value iteration.
 
 def question2():
+    # We use a big answer discount to make increase the importance of further tiles and very small answerNoise, 
+    # which considers a reduced probability of ending in a bad tile. 
+    # That's the only way of having the path to the tile with 100
     answerDiscount = 0.9
-    answerNoise = 0.01 
+    answerNoise = 0.01
     return answerDiscount, answerNoise
 
 def question3a():
+    # To go to the nearest goal risking cliff, we need to consider less of future tiles and have almost no chance of going to the cliff.
+    # Adding a negative living reward not too big also helps to get this outcome.
     answerDiscount = 0.3
     answerNoise = 0
     answerLivingReward = 0
@@ -32,13 +37,17 @@ def question3a():
     # If not possible, return 'NOT POSSIBLE'
 
 def question3b():
-    answerDiscount = 0.2
-    answerNoise = 0.1
+    # Adding some noise and and a negative living reward makes the MDP prefer going fast to any exit, but due to the noise it has to avoid
+    # the vliff
+    answerDiscount = 0.4
+    answerNoise = 0.2
     answerLivingReward = -1
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
 def question3c():
+    # To go to the far exit (+10) we just need to add more discount, this way goals that are further have more value. Adding a negative
+    # reward makes the MDP want to reach it fast if the noie is not too big.
     answerDiscount = 0.9
     answerNoise = 0.2
     answerLivingReward = -1
@@ -46,6 +55,7 @@ def question3c():
     # If not possible, return 'NOT POSSIBLE'
 
 def question3d():
+    # Removing the negative living reward is enough to make the MDP prefer to avoid the cliff.
     answerDiscount = 0.9
     answerNoise = 0.2
     answerLivingReward = 0
@@ -53,6 +63,7 @@ def question3d():
     # If not possible, return 'NOT POSSIBLE'
 
 def question3e():
+    # If the living reward is big and positive, it will prefer to keep going forever to keep earning points.
     answerDiscount = 0.9
     answerNoise = 0.2
     answerLivingReward = 20
