@@ -32,6 +32,7 @@ from learningAgents import ValueEstimationAgent
 import collections
 
 class ValueIterationAgent(ValueEstimationAgent):
+    #Exercise 1
     """
         * Please read learningAgents.py before reading this.*
 
@@ -63,7 +64,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         # Write value iteration code here
         
         "*** YOUR CODE HERE ***"
-        #Exercise 1
+        
         #Iterate over all the number of iterations indicated
         for iter_num in range(self.iterations):
             temp_values = self.values.copy()
@@ -99,11 +100,16 @@ class ValueIterationAgent(ValueEstimationAgent):
         "*** YOUR CODE HERE ***"
 
         total_qvalue = 0
+
+        # Get the transition states and probabilities for the given state and action
         transition_states_probs = self.mdp.getTransitionStatesAndProbs(state, action)
         
+        # Loop over each next state and its probability
         for nextState, prob in transition_states_probs:
             reward = self.mdp.getReward(state, action, nextState)
             future_value = self.discount * self.getValue(nextState)
+            
+            # Update the total_qvalue by adding the (reward + future_value) weighted by the probability
             total_qvalue += prob * (reward + future_value)
 
         return total_qvalue
@@ -120,12 +126,16 @@ class ValueIterationAgent(ValueEstimationAgent):
 
         "*** YOUR CODE HERE ***"
 
+        # Initialize a counter for the action values
         action_values = util.Counter()
         
+        # Loop over all possible actions in the given state
         for pos_action in self.mdp.getPossibleActions(state):
+            
+            # Compute the Q-value for the state and pos_action, and store it in the counter
             action_values[pos_action] = self.getQValue(state, pos_action)
             
-        
+        #Action with the highets q-value
         best_action = action_values.argMax()
         return best_action
         

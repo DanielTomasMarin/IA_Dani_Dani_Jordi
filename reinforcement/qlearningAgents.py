@@ -19,6 +19,7 @@ from featureExtractors import *
 import random,util,math
 
 class QLearningAgent(ReinforcementAgent):
+    #Exercise 6
     """
       Q-Learning Agent
 
@@ -52,7 +53,7 @@ class QLearningAgent(ReinforcementAgent):
           or the Q node value otherwise
         """
         "*** YOUR CODE HERE ***"
-        #Calculate Q-value
+        #Calculate Q-value for the given state and action pairs.
         qvalue = self.values[(state, action)]
         return qvalue
 
@@ -66,15 +67,19 @@ class QLearningAgent(ReinforcementAgent):
         """
         "*** YOUR CODE HERE ***"
 
+        # Check if there are no legal actions for the given state, return qvalue 0
         if len(self.getLegalActions(state)) == 0:
             return 0
 
         qNextS = []
-
+        
+        # Iterate over all legal nextActions for the given state
         for nextAction in self.getLegalActions(state):
+            # Compute the Qvalue for the nextAction and state and add it to the list
             qResult = self.getQValue(state, nextAction)
             qNextS.append(qResult)
-
+        
+        # Find the maximum Qvalue from the list
         maxQ = max(qNextS)
         return maxQ
 
@@ -86,22 +91,27 @@ class QLearningAgent(ReinforcementAgent):
         """
         "*** YOUR CODE HERE ***"
 
-
+        # Check if there are no legal actions for the given state,return action None
         if len(self.getLegalActions(state)) == 0:
             return None
 
+        # Compute the optimal Qvalue for the given state
         optimalQ= self.computeValueFromQValues(state)
         optimalActions = []
 
-        
+        # Iterate over all legal nextActions for the given state
         for nextAction in self.getLegalActions(state):
+            #Check if the Qvalue for the action is equal to the optimal Qvalue, add the action to the list
             if optimalQ == self.getQValue(state, nextAction):
                 optimalActions.append(nextAction)
-
+        
+        # Choose a random action from the list of optimal actions: 
+        # if there are various actions with the same optimal Qvalue, then the Agent randomly selects one of them.
         rand = random.randint(0,len(optimalActions)-1)
         return optimalActions[rand]
 
     def getAction(self, state):
+        #Exercise 7
         """
           Compute the action to take in the current state.  With
           probability self.epsilon, we should take a random action and
@@ -116,10 +126,13 @@ class QLearningAgent(ReinforcementAgent):
         legalActions = self.getLegalActions(state)
         action = None
         "*** YOUR CODE HERE ***"
-
+        
+        # Take a random action with probability self.epsilon
         if util.flipCoin(self.epsilon) == True:
+            #Store a random action of legalActions list
             action = random.choice(legalActions)
         else:
+            # otherwise, choose the optimalAction based on Qvalues
             action = self.computeActionFromQValues(state)
         return action
       
@@ -135,8 +148,13 @@ class QLearningAgent(ReinforcementAgent):
         """
         "*** YOUR CODE HERE ***"
 
+        # Calculate old Qvalue for the given state and action pairs.
         oldQ = self.values[(state, action)]
+
+        # Calculate new Qvalue using Bellman equation
         newQ = reward + self.discount * self.getValue(nextState)
+
+        # Update the Qvalue for the given state and action pairs using the alpha: learning rate
         self.values[(state, action)] = (1 - self.alpha) * oldQ + self.alpha * newQ
     
     def getPolicy(self, state):
